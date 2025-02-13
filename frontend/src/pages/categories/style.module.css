@@ -1,0 +1,43 @@
+.categories-body {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-top: 70px !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.categories-label {
+    font-weight: bold !important;
+    font-size: 1.5rem !important;
+}
+
+.categories-table {
+    margin-top: 20px !important;
+    width: 90% !important;
+}
+
+.categories-table-head {
+    font-weight: bold !important;
+    font-size: 1.2rem !important;;
+}
+
+.categories-table-delete-button {
+    background: crimson !important;
+    margin-left: 20px !important;
+}
+
+.categories-table-change-button {
+    background: #2f3a4c !important;
+}
+
+.categories-add-button {
+    background: #098842 !important;
+    margin-top: 10px !important;
+}
+
+.categories-table-cell {
+    max-width: 300px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}

@@ -1,0 +1,47 @@
+.card {
+    border: 1px solid #ddd !important;
+    padding: 4px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: transform 0.2s !important;
+    background-color: #fff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-align: center !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+}
+
+.card:hover {
+    transform: scale(1.05) !important;
+}
+
+.card-product-name {
+    font-weight: bold !important;
+    font-size: 1.2rem !important;
+    margin-bottom: 10px !important;
+}
+
+.card-product-img {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    min-width: 130px !important;
+    max-height: 80px !important;
+}
+
+.card-props-box {
+    margin-top: 10px !important;
+}
+
+.card-prop {
+    font-family: sans-serif !important;
+    font-size: 0.8rem !important;
+}
+
+.card-delete-button {
+    font-family: sans-serif !important;
+    background: crimson !important;
+    margin-bottom: 10px !important;
+}

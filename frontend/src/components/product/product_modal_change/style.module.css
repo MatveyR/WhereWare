@@ -1,0 +1,45 @@
+.modal {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.modal-content {
+    background-color: white !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    width: 80% !important;
+    max-width: 375px !important;
+    position: relative !important;
+    text-align: center !important;
+}
+
+.modal-label {
+    font-size: 1.2rem !important;
+    font-weight: bold;
+    padding-bottom: 30px;
+}
+
+.modal-form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+.modal-form-option {
+    display: flex !important;
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.modal-box-save-button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.modal-save-button {
+    background: #098842 !important;
+    margin-top: 30px !important;
+}

@@ -1,0 +1,27 @@
+.profile-body {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-top: 70px !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.profile-label {
+    font-weight: bold !important;
+    text-align: center !important;
+    font-size: 1.5rem !important;
+}
+
+.profile-img {
+    max-width: 300px !important;
+    max-height: 300px !important;
+    min-height: 300px !important;
+    min-width: 300px !important;
+    margin-top: 30px !important;
+    margin-bottom: 30px !important;
+    border-radius: 100% !important;
+}
+
+.profile-option {
+    font-size: 1.2rem !important;
+}
