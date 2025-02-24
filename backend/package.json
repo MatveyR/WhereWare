@@ -2,14 +2,25 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon src/server.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.2",
-    "nodemon": "^3.1.9"
+    "mongodb": "^6.13.1",
+    "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/mongodb": "^4.0.7",
+    "@types/node": "^22.13.3",
+    "@types/typescript": "^2.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2"
   }
 }

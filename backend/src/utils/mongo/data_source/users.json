@@ -1,0 +1,16 @@
+[
+  {
+    "id": "0",
+    "name": "Matvey R.",
+    "email": "brokamp@mail.ru",
+    "image_url": "https://avatars.mds.yandex.net/i?id=acefced60c03711bda61d9dbd9a99474_l-5246355-images-thumbs&n=13",
+    "group": "Студент"
+  },
+  {
+    "id": "1",
+    "name": "Robert Polson",
+    "email": "robert_polson@mail.ru",
+    "image_url": "https://static.tvtropes.org/pmwiki/pub/images/bob_1.png",
+    "group": "Преподаватель"
+  }
+]
