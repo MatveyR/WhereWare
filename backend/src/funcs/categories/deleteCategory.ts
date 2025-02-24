@@ -5,6 +5,8 @@ async function deleteCategory(req: Request, res: Response) {
 
     const categoryId = req.params.id;
 
+    console.log(`Запрос удаления категории с id ${categoryId}`);
+
     const categoriesCollection = mongoClient.db('WhereWare').collection('categories');
     const productsCollection = mongoClient.db('WhereWare').collection('products');
 

@@ -5,7 +5,9 @@ async function updateProduct(req: Request, res: Response) {
     const { app: { locals: { mongoClient } } } = req;
 
     const productId = req.params.id;
-    
+
+    console.log(`Запрос обновления продукта с id ${productId}`);
+
     const {
         name,
         description,

@@ -11,6 +11,8 @@ async function createCategory(req: Request, res: Response) {
 
     const {name, description} = req.body;
 
+    console.log("Запрос создания новой категории");
+
     if (!name || !description) {
         res.status(400).json({message: 'Необходимо заполнить все обязательные поля'});
         return;

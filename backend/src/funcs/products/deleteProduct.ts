@@ -5,6 +5,8 @@ async function deleteProduct(req: Request, res: Response) {
 
     const productId = req.params.id;
 
+    console.log(`Запрос удаления продукта с id ${productId}`);
+
     const productsCollection = mongoClient.db('WhereWare').collection('products');
 
     try {

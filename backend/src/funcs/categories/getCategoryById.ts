@@ -5,6 +5,8 @@ async function getCategoryById(req: Request, res: Response) {
 
     const categoryId = req.params.id;
 
+    console.log(`Запрос получения категории с id ${categoryId}`);
+
     const categoriesCollection = mongoClient.db('WhereWare').collection('categories');
 
     try {

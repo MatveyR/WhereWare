@@ -3,6 +3,8 @@ import {Request, Response} from "express";
 async function getProducts(req: Request, res: Response) {
     const { app: { locals: { mongoClient } } } = req;
 
+    console.log(`Запрос получения всех продуктов`);
+
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = parseInt(req.query.offset as string) || 0;
 

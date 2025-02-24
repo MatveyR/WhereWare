@@ -4,6 +4,8 @@ import {Product} from "../../models/Product";
 async function createProduct(req: Request, res: Response) {
     const {app: {locals: {mongoClient}}} = req;
 
+    console.log(`Запрос создания нового продукта`);
+
     const {
         name,
         description,

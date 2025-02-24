@@ -6,6 +6,8 @@ async function updateCategory(req: Request, res: Response) {
 
     const categoryId = req.params.id;
 
+    console.log(`Запрос обновления категории с id ${categoryId}`);
+
     const {name, description} = req.body;
 
     if (!name && !description) {

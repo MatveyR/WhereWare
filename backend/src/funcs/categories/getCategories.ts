@@ -5,6 +5,8 @@ async function getCategories(req: Request, res: Response) {
 
     const categoriesCollection = mongoClient.db('WhereWare').collection('categories');
 
+    console.log("Запрос получения всех категорий");
+
     try {
         const categories = await categoriesCollection.aggregate([
             {

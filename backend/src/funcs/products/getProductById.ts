@@ -5,6 +5,8 @@ async function getProductById(req: Request, res: Response) {
 
     const productId = req.params.id;
 
+    console.log(`Запрос получения продукта с id ${productId}`);
+
     const productsCollection = mongoClient.db('WhereWare').collection('products');
 
     try {
