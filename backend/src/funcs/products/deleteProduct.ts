@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 
-async function deleteProduct(req: Request, res: Response) {
+async function deleteProduct(req: Request, res: Response, next: NextFunction) {
     const { app: { locals: { mongoClient } } } = req;
 
     const productId = req.params.id;
@@ -19,8 +19,7 @@ async function deleteProduct(req: Request, res: Response) {
 
         res.json({ message: 'Продукт успешно удален' });
     } catch (error) {
-        console.error('Ошибка при удалении продукта:', error);
-        res.status(500).json({ message: 'Ошибка сервера' });
+        next(error);
     }
 }
 

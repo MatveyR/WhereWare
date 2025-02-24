@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import {Product} from "../../models/Product";
 
-async function updateProduct(req: Request, res: Response) {
+async function updateProduct(req: Request, res: Response, next: NextFunction) {
     const { app: { locals: { mongoClient } } } = req;
 
     const productId = req.params.id;
@@ -63,8 +63,7 @@ async function updateProduct(req: Request, res: Response) {
 
         res.json({ message: 'Продукт успешно обновлен' });
     } catch (error) {
-        console.error('Ошибка при обновлении продукта:', error);
-        res.status(500).json({ message: 'Ошибка сервера' });
+        next(error);
     }
 }
 

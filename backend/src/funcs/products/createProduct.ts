@@ -1,7 +1,7 @@
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import {Product} from "../../models/Product";
 
-async function createProduct(req: Request, res: Response) {
+async function createProduct(req: Request, res: Response, next: NextFunction) {
     const {app: {locals: {mongoClient}}} = req;
 
     console.log(`Запрос создания нового продукта`);
@@ -44,8 +44,7 @@ async function createProduct(req: Request, res: Response) {
 
         res.status(201).json(newProduct);
     } catch (error) {
-        console.error('Ошибка при создании продукта:', error);
-        res.status(500).json({message: 'Ошибка сервера'});
+        next(error);
     }
 }
 

@@ -1,6 +1,6 @@
-import {Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 
-async function getProducts(req: Request, res: Response) {
+async function getProducts(req: Request, res: Response, next: NextFunction) {
     const { app: { locals: { mongoClient } } } = req;
 
     console.log(`Запрос получения всех продуктов`);
@@ -45,8 +45,7 @@ async function getProducts(req: Request, res: Response) {
 
         res.json(products);
     } catch (error) {
-        console.error('Ошибка при получении продуктов:', error);
-        res.status(500).json({ message: 'Ошибка сервера' });
+        next(error);
     }
 }
 

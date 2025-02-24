@@ -1,6 +1,6 @@
-import {Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 
-async function getCategories(req: Request, res: Response) {
+async function getCategories(req: Request, res: Response, next: NextFunction) {
     const {app: {locals: {mongoClient}}} = req;
 
     const categoriesCollection = mongoClient.db('WhereWare').collection('categories');
@@ -30,8 +30,7 @@ async function getCategories(req: Request, res: Response) {
 
         res.json(categories);
     } catch (error) {
-        console.error('Ошибка при получении категорий:', error);
-        res.status(500).json({message: 'Ошибка сервера'});
+        next(error);
     }
 }
 

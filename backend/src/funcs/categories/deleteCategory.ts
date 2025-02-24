@@ -1,6 +1,6 @@
-import {Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 
-async function deleteCategory(req: Request, res: Response) {
+async function deleteCategory(req: Request, res: Response, next: NextFunction) {
     const {app: {locals: {mongoClient}}} = req;
 
     const categoryId = req.params.id;
@@ -30,8 +30,7 @@ async function deleteCategory(req: Request, res: Response) {
 
         res.json({message: 'Категория успешно удалена'});
     } catch (error) {
-        console.error('Ошибка при удалении категории:', error);
-        res.status(500).json({message: 'Ошибка сервера'});
+        next(error);
     }
 }
 

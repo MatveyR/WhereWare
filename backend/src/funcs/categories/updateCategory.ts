@@ -1,7 +1,7 @@
-import {Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 import {Category} from "./createCategory";
 
-async function updateCategory(req: Request, res: Response) {
+async function updateCategory(req: Request, res: Response, next: NextFunction) {
     const {app: {locals: {mongoClient}}} = req;
 
     const categoryId = req.params.id;
@@ -41,8 +41,7 @@ async function updateCategory(req: Request, res: Response) {
 
         res.json({message: 'Категория успешно обновлена'});
     } catch (error) {
-        console.error('Ошибка при обновлении категории:', error);
-        res.status(500).json({message: 'Ошибка сервера'});
+        next(error);
     }
 }
 

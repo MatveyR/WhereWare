@@ -1,6 +1,6 @@
-import {Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 
-async function getCategoryById(req: Request, res: Response) {
+async function getCategoryById(req: Request, res: Response, next: NextFunction) {
     const {app: {locals: {mongoClient}}} = req;
 
     const categoryId = req.params.id;
@@ -38,8 +38,7 @@ async function getCategoryById(req: Request, res: Response) {
 
         res.json(category);
     } catch (error) {
-        console.error('Ошибка при получении категории:', error);
-        res.status(500).json({message: 'Ошибка сервера'});
+        next(error);
     }
 }
 

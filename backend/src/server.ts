@@ -3,6 +3,7 @@ import cors from "cors";
 import {initMongo} from "./utils/mongo/connection";
 import {productsRouter} from "./routes/productsRouter";
 import {categoriesRouter} from "./routes/categoriesRouter";
+import {errorHandler} from "./middlewares/error_handler";
 
 const app = express();
 const port = 3000;
@@ -12,6 +13,8 @@ app.use(cors());
 
 app.use('/api/products', productsRouter);
 app.use('/api/categories', categoriesRouter);
+
+app.use(errorHandler);
 
 initMongo()
     .then((client) => {

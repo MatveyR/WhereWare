@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 
 export type Category = {
     id: string;
@@ -6,7 +6,7 @@ export type Category = {
     description: string;
 };
 
-async function createCategory(req: Request, res: Response) {
+async function createCategory(req: Request, res: Response, next: NextFunction) {
     const {app: {locals: {mongoClient}}} = req;
 
     const {name, description} = req.body;
@@ -36,8 +36,7 @@ async function createCategory(req: Request, res: Response) {
 
         res.status(201).json(newCategory);
     } catch (error) {
-        console.error('Ошибка при создании категории:', error);
-        res.status(500).json({message: 'Ошибка сервера'});
+        next(error);
     }
 }
 
