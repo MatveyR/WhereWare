@@ -13,7 +13,7 @@ async function createCategory(req: Request, res: Response, next: NextFunction) {
 
     console.log("Запрос создания новой категории");
 
-    if (!name || !description) {
+    if (!name) {
         res.status(400).json({message: 'Необходимо заполнить все обязательные поля'});
         return;
     }

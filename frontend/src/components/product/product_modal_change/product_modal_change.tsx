@@ -1,10 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import styles from "./style.module.css";
 import {Box, Button, MenuItem, Modal, Select, TextField, Typography} from '@mui/material';
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../../data/store/store.tsx";
-import {addProduct, updateProduct} from "../../../data/store/slices/productSlice.tsx";
 import {Product} from "../../../data/models/Product.tsx";
+import {addProduct, updateProduct} from "../../../apis/productApi.ts";
+import {Category} from "../../../data/models/Category.tsx";
+import {fetchCategories} from "../../../apis/categoryApi.ts";
 
 interface ProductModalChangeProps {
     onClose: () => void;
@@ -12,11 +12,8 @@ interface ProductModalChangeProps {
 }
 
 export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, product}) => {
-    const dispatch = useDispatch();
-    const categories = useSelector((state: RootState) => state.categories.categories);
-
     const [productName, setProductName] = useState(product ? product.name : "");
-    const [productCategory, setProductCategory] = useState(product ? product.category : "");
+    const [productCategory, setProductCategory] = useState(product ? product.category_name : "");
     const [productDescription, setProductDescription] = useState(product ? product.description : "");
     const [productQuantity, setProductQuantity] = useState(product ? product.quantity : null);
     const [productPrice, setProductPrice] = useState(product ? product.price : null);
@@ -29,6 +26,21 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
     const [quanError, setQuanError] = useState<string | null>(null);
     const [priceError, setPriceError] = useState<string | null>(null);
 
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    const loadCategories = async () => {
+        try {
+            const categoriesResponse = await fetchCategories();
+            setCategories(categoriesResponse);
+        } catch {
+            console.error("Ошибка при загрузке категорий");
+        }
+    };
+
+    useEffect(() => {
+        loadCategories();
+    }, []);
+
     const resetErrors = () => {
         setNameError(null);
         setDescError(null);
@@ -37,7 +49,12 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
         setPriceError(null);
     };
 
-    const handleSaveProduct = () => {
+    const cat = categories.find((it) => (it.name === productCategory));
+    if (cat) {
+        setProductCategory(cat.id);
+    }
+
+    const handleSaveProduct = async () => {
         resetErrors();
         let errorFlag = false;
         if (productName === "") {
@@ -64,42 +81,33 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
             return;
         }
 
-        const category = categories.find((category) => category.name === productCategory);
-        let category_id = "0";
-        if (category) {
-            category_id = category.id;
+        const categoryId = categories.find((it) => (it.name === productCategory));
+        if (categoryId) {
+            setProductCategory(categoryId.id);
         }
+        const newProduct = {
+            id: product ? product.id : "",
+            name: productName,
+            description: productDescription,
+            category_name: productCategory,
+            quantity: productQuantity!,
+            price: productPrice!,
+            unit: productUnit!,
+            image: productImage || null,
+        };
 
-        if (!product) {
-            dispatch(
-                addProduct({
-                    id: Date.now().toString(),
-                    name: productName,
-                    description: productDescription,
-                    category: productCategory,
-                    category_id: category_id,
-                    quantity: productQuantity!,
-                    price: productPrice!,
-                    unit: productUnit,
-                    image: productImage
-                })
-            );
-        } else {
-            dispatch(
-                updateProduct({
-                    id: product.id,
-                    name: productName,
-                    description: productDescription,
-                    category: productCategory,
-                    category_id: category_id,
-                    quantity: productQuantity!,
-                    price: productPrice!,
-                    unit: productUnit,
-                    image: productImage
-                })
-            )
+        try {
+            if (!product) {
+                const response = await addProduct(newProduct);
+                console.log("Продукт добавлен:", response.data);
+            } else {
+                const response = await updateProduct(newProduct);
+                console.log("Продукт обновлен:", response.data);
+            }
+            onClose();
+        } catch (error) {
+            console.error("Ошибка при сохранении продукта:", error);
         }
-        onClose();
     };
 
     return (
@@ -147,16 +155,14 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
                         <Select
                             size="small"
                             variant="outlined"
-                            value={productCategory || "Любое"}
+                            value={productCategory}
                             error={!!catError}
-                            onChange={
-                                (e) => {
-                                    setProductCategory(e.target.value)
-                                }
-                            }
+                            onChange={(e) => {
+                                setProductCategory(e.target.value)
+                            }}
                         >
                             {categories.map((category) =>
-                                <MenuItem value={category.name}>{category.name}</MenuItem>
+                                <MenuItem value={category.id}>{category.name}</MenuItem>
                             )}
                         </Select>
                     </Box>
@@ -169,9 +175,12 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
                             size="small"
                             error={!!quanError}
                             helperText={quanError}
-                            value={productQuantity}
+                            value={productQuantity === null ? "" : productQuantity}
                             onChange={(e) => {
-                                setProductQuantity(Number(e.target.value))
+                                const value = e.target.value;
+                                if (value === "" || !isNaN(Number(value))) {
+                                    setProductQuantity(value === "" ? null : Number(value));
+                                }
                             }}
                         />
                     </Box>
@@ -184,11 +193,9 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
                             size="small"
                             variant="outlined"
                             value={productUnit || "шт"}
-                            onChange={
-                                (e) => {
-                                    setProductUnit(e.target.value)
-                                }
-                            }
+                            onChange={(e) => {
+                                setProductUnit(e.target.value)
+                            }}
                         >
                             <MenuItem value="шт">шт</MenuItem>
                             <MenuItem value="кг">кг</MenuItem>
@@ -204,9 +211,12 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
                             size="small"
                             error={!!priceError}
                             helperText={priceError}
-                            value={productPrice}
+                            value={productPrice === null ? "" : productPrice}
                             onChange={(e) => {
-                                setProductPrice(Number(e.target.value))
+                                const value = e.target.value;
+                                if (value === "" || !isNaN(Number(value))) {
+                                    setProductPrice(value === "" ? null : Number(value));
+                                }
                             }}
                         />
                     </Box>
@@ -217,9 +227,9 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
                         </Typography>
                         <TextField
                             size="small"
-                            value={productImage}
+                            value={productImage || ""}
                             onChange={(e) => {
-                                setProductImage(e.target.value)
+                                setProductImage(e.target.value || null);
                             }}
                         />
                     </Box>
@@ -228,7 +238,7 @@ export const ProductModalChange: React.FC<ProductModalChangeProps> = ({onClose, 
                     <Button
                         className={styles['modal-save-button']}
                         variant="contained"
-                        onClick={() => handleSaveProduct()}
+                        onClick={handleSaveProduct}
                     >
                         Сохранить
                     </Button>

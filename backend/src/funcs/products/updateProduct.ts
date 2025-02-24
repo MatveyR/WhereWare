@@ -48,7 +48,7 @@ async function updateProduct(req: Request, res: Response, next: NextFunction) {
         if (quantity !== undefined) updateFields.quantity = quantity;
         if (price !== undefined) updateFields.price = price;
         if (unit) updateFields.unit = unit;
-        if (image) updateFields.image = image;
+        if (image !== undefined) updateFields.image = image;
 
         
         const result = await productsCollection.updateOne(

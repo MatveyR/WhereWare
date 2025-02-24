@@ -7,11 +7,27 @@ async function getProducts(req: Request, res: Response, next: NextFunction) {
 
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = parseInt(req.query.offset as string) || 0;
+    const textMask = req.query.textMask as string || '';
+    const category = req.query.category as string || '';
+    const nonZeroQ = req.query.nonZeroQ === 'true';
 
     const productsCollection = mongoClient.db('WhereWare').collection('products');
 
     try {
+        const filter: any = {};
+        if (textMask) {
+            filter.name = { $regex: textMask, $options: 'i' };
+        }
+        if (category) {
+            filter.category_id = category;
+        }
+        if (nonZeroQ) {
+            filter.quantity = { $gt: 0 };
+        }
+
         const products = await productsCollection.aggregate([
+            { $match: filter},
+            { $sort: { id: 1 } },
             { $skip: offset },
             { $limit: limit },
             {
@@ -43,7 +59,7 @@ async function getProducts(req: Request, res: Response, next: NextFunction) {
             return;
         }
 
-        const total = await productsCollection.countDocuments({});
+        const total = await productsCollection.countDocuments(filter);
 
         res.json({products: products, totalAmount: total});
     } catch (error) {

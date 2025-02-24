@@ -41,7 +41,7 @@ async function getProductById(req: Request, res: Response, next: NextFunction) {
             return;
         }
 
-        res.json(product);
+        res.json(product[0]);
     } catch (error) {
         next(error);
     }

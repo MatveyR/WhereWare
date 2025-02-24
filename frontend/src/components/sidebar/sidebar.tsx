@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import styles from "./style.module.css";
 import {
     Box,
@@ -10,10 +10,10 @@ import {
     MenuItem,
     Select,
     TextField,
-    Typography,
+    Typography
 } from "@mui/material";
-import {useSelector} from "react-redux";
-import {RootState} from "../../data/store/store.tsx";
+import {fetchCategories} from "../../apis/categoryApi.ts";
+import {Category} from "../../data/models/Category.tsx";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -22,11 +22,24 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({isOpen, onFiltrate}) => {
-    const categories = useSelector((state: RootState) => state.categories.categories);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const [textMask, setSearchText] = useState("");
     const [category, setCategory] = useState("");
     const [nonZeroQ, setNonZeroQ] = useState(false);
+
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const categories = await fetchCategories();
+                setCategories(categories);
+            } catch {
+                console.error("Ошибка при загрузке категорий");
+            }
+        };
+
+        loadCategories();
+    }, []);
 
     const handleSetFilters = () => {
         onFiltrate({textMask, category, nonZeroQ});
@@ -68,17 +81,17 @@ export const Sidebar: React.FC<SidebarProps> = ({isOpen, onFiltrate}) => {
                                 variant="outlined"
                                 size="small"
                                 className={styles["sidebar-select"]}
-                                value={category || "Любое"}
+                                value={category || "0"}
                                 onChange={(e) => {
                                     if (e.target.value === "Любое") {
-                                        setCategory("");
+                                        setCategory('');
                                     } else {
                                         setCategory(e.target.value);
                                     }
                                 }}
                             >
                                 {categories.map((category) =>
-                                    <MenuItem value={category.name}>{category.name}</MenuItem>
+                                    <MenuItem value={category.id}>{category.name}</MenuItem>
                                 )}
                             </Select>
                         </FormControl>

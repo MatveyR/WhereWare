@@ -19,7 +19,7 @@ export const HomePage: React.FC = () => {
     const handleAddNewProduct = (flag: boolean) => {
         setAddNewProduct(flag);
     };
-    const handleCloseAddNewProduct = () => {
+    const handleCloseAddNewProduct = async () => {
         setAddNewProduct(false);
     };
 
@@ -41,8 +41,8 @@ export const HomePage: React.FC = () => {
     const handleRemoveProduct = async (product_id: string) => {
         try {
             await deleteProduct(product_id);
-            setProducts(products.filter((product) => product.id !== product_id));
-        } catch (error) {
+            await loadProducts();
+        } catch {
             setError("Ошибка при удалении товара");
         }
     };
@@ -52,25 +52,27 @@ export const HomePage: React.FC = () => {
         setCurrentPage(page);
     };
 
+    const loadProducts = async () => {
+        try {
+            const {products, totalAmount} = await fetchProducts(
+                (currentPage - 1) * 10,
+                10,
+                filters.textMask,
+                filters.category,
+                filters.nonZeroQ
+            );
+            setProducts(products);
+            setTotalCount(totalAmount);
+            setIsLoading(false);
+        } catch {
+            setError("Ошибка при загрузке товаров");
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const loadProducts = async () => {
-            try {
-                const {products, totalAmount} = await fetchProducts(
-                    (currentPage - 1) * 10,
-                    10
-                );
-                setProducts(products);
-                setTotalCount(totalAmount);
-                setIsLoading(false);
-            } catch (error) {
-                setError("Ошибка при загрузке товаров");
-                setIsLoading(false);
-            }
-        };
-
         loadProducts();
-    }, [filters, currentPage]);
+    }, [filters, currentPage, addNewProduct]);
 
     if (isLoading) {
         return <Typography>Загрузка...</Typography>;

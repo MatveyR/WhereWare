@@ -1,9 +1,8 @@
 import React, {useState} from "react";
 import styles from "../../product/product_modal_change/style.module.css";
 import {Box, Button, Modal, TextField, Typography} from '@mui/material';
-import {useDispatch} from "react-redux";
 import {Category} from "../../../data/models/Category.tsx";
-import {addCategory, updateCategory} from "../../../data/store/slices/categorySlice.tsx";
+import {addCategory, updateCategory} from "../../../apis/categoryApi.ts";
 
 interface CategoryModalChangeProps {
     onClose: () => void;
@@ -11,37 +10,29 @@ interface CategoryModalChangeProps {
 }
 
 export const CategoryModalChange: React.FC<CategoryModalChangeProps> = ({onClose, category}) => {
-    const dispatch = useDispatch();
-
     const [categoryName, setCategoryName] = useState(category ? category.name : "");
     const [categoryDescription, setCategoryDescription] = useState(category ? category.description : "");
 
     const [nameError, setNameError] = useState<string | null>(null);
 
-    const handleSaveCategory = () => {
+    const handleSaveCategory = async() => {
         if (categoryName === "") {
             setNameError("Обязательное поле");
             return;
         }
 
-        if (!category) {
-            dispatch(
-                addCategory({
-                    id: Date.now().toString(),
-                    name: categoryName,
-                    description: categoryDescription
-                })
-            );
-        } else {
-            dispatch(
-                updateCategory({
-                    id: category.id,
-                    name: categoryName,
-                    description: categoryDescription
-                })
-            )
+        try {
+            if (!category) {
+                const response = await addCategory({name: categoryName, description: categoryDescription, id: "", productCount: 0});
+                console.log(response.data);
+            } else {
+                const response = await updateCategory(category);
+                console.log(response.data);
+            }
+            onClose();
+        } catch (error) {
+            console.error("Ошибка при сохранении категории:", error);
         }
-        onClose();
     };
 
     return (
