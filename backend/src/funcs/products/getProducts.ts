@@ -43,7 +43,9 @@ async function getProducts(req: Request, res: Response, next: NextFunction) {
             return;
         }
 
-        res.json(products);
+        const total = await productsCollection.countDocuments({});
+
+        res.json({products: products, totalAmount: total});
     } catch (error) {
         next(error);
     }

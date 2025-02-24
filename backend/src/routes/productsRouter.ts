@@ -8,3 +8,4 @@ productsRouter.post("/", productsController.createProduct);
 productsRouter.get("/:id", productsController.getProductById);
 productsRouter.put("/:id", productsController.updateProduct);
 productsRouter.delete("/:id", productsController.deleteProduct);
+productsRouter.get("/total", productsController.getTotalAmount);

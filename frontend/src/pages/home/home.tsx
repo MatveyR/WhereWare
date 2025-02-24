@@ -1,66 +1,89 @@
 import * as React from "react";
-import {useState} from "react";
-import {NavBar, ProductModalChange, ProductCard, Sidebar} from "../../components/components";
+import {useEffect, useState} from "react";
+import {NavBar, ProductCard, ProductModalChange, Sidebar} from "../../components/components";
 import styles from "./style.module.css";
 import {Product} from "../../data/models/Product.tsx";
 import {Box, Button, Pagination, Typography} from "@mui/material";
-import {useDispatch, useSelector} from "react-redux";
-import {removeProduct} from "../../data/store/slices/productSlice.tsx";
-import {RootState} from "../../data/store/store.tsx";
 import {useNavigate} from "react-router";
+import {deleteProduct, fetchProducts} from "../../apis/productApi.ts";
 
 export const HomePage: React.FC = () => {
     const navigate = useNavigate();
 
+    const [products, setProducts] = useState<Product[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const [addNewProduct, setAddNewProduct] = useState<boolean>(false);
     const handleAddNewProduct = (flag: boolean) => {
         setAddNewProduct(flag);
-    }
+    };
     const handleCloseAddNewProduct = () => {
         setAddNewProduct(false);
-    }
+    };
 
     const [isSidebarClosed, setIsSidebarClosed] = useState(false);
     const handleSidebarToggle = () => {
         setIsSidebarClosed(!isSidebarClosed);
-    }
+    };
 
     const [filters, setFilters] = useState({textMask: '', category: '', nonZeroQ: false});
-    const handleFilters = (filters: { textMask: string, category: string, nonZeroQ: boolean }) => {
+    const handleFilters = (filters: { textMask: string; category: string; nonZeroQ: boolean }) => {
         setFilters(filters);
         setCurrentPage(1);
     };
 
     const handleProductClick = (product_id: string) => {
-        navigate(`/products/${product_id}`)
-    }
+        navigate(`/products/${product_id}`);
+    };
 
-    const {products} = useSelector((state: RootState) => state.products);
-    const dispatch = useDispatch();
-    const handleRemoveProduct = (product_id: string) => {
-        dispatch(removeProduct(product_id));
+    const handleRemoveProduct = async (product_id: string) => {
+        try {
+            await deleteProduct(product_id);
+            setProducts(products.filter((product) => product.id !== product_id));
+        } catch (error) {
+            setError("Ошибка при удалении товара");
+        }
     };
 
     const [currentPage, setCurrentPage] = useState(1);
     const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
         setCurrentPage(page);
     };
-    const filtratedData = products.filter((product) => {
-        return (
-            (filters.textMask === '' || product.name.toLowerCase().includes(filters.textMask)) &&
-            (!filters.nonZeroQ || product.quantity > 0) &&
-            (filters.category === '' || product.category === filters.category)
-        )
-    });
-    const paginatedData = filtratedData.reverse().slice((currentPage - 1) * 10, currentPage * 10);
+
+
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const {products, totalAmount} = await fetchProducts(
+                    (currentPage - 1) * 10,
+                    10
+                );
+                setProducts(products);
+                setTotalCount(totalAmount);
+                setIsLoading(false);
+            } catch (error) {
+                setError("Ошибка при загрузке товаров");
+                setIsLoading(false);
+            }
+        };
+
+        loadProducts();
+    }, [filters, currentPage]);
+
+    if (isLoading) {
+        return <Typography>Загрузка...</Typography>;
+    }
+
+    if (error) {
+        return <Typography color="error">{error}</Typography>;
+    }
 
     return (
         <Box>
             <Sidebar isOpen={isSidebarClosed} onClose={handleSidebarToggle} onFiltrate={handleFilters}/>
-            <NavBar
-                onSidebarToggle={handleSidebarToggle}
-                isHome={true}
-            />
+            <NavBar onSidebarToggle={handleSidebarToggle} isHome={true}/>
 
             <Box className={styles['box-button']}>
                 <Button
@@ -72,10 +95,10 @@ export const HomePage: React.FC = () => {
                 </Button>
             </Box>
 
-            {filtratedData.length !== 0 ? (
+            {products.length !== 0 ? (
                 <Box>
                     <Box className={styles.productsGrid}>
-                        {paginatedData.map((product: Product, index: number) => (
+                        {products.map((product: Product, index: number) => (
                             <ProductCard
                                 key={index}
                                 product={product}
@@ -86,7 +109,7 @@ export const HomePage: React.FC = () => {
                     </Box>
 
                     <Pagination
-                        count={Math.ceil(filtratedData.length / 10)}
+                        count={Math.ceil(totalCount / 10)}
                         page={currentPage}
                         onChange={handlePageChange}
                         sx={{display: 'flex', justifyContent: 'center'}}
@@ -102,12 +125,9 @@ export const HomePage: React.FC = () => {
                 <ProductModalChange onClose={handleCloseAddNewProduct} product={null}/>
             )}
 
-            {isSidebarClosed &&
-                <Box
-                    className={styles["blurOverlay"]}
-                    onClick={handleSidebarToggle}
-                ></Box>
-            }
+            {isSidebarClosed && (
+                <Box className={styles["blurOverlay"]} onClick={handleSidebarToggle}></Box>
+            )}
         </Box>
     );
 };

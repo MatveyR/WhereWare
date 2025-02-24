@@ -2,9 +2,9 @@ export interface Product {
     id: string;
     name: string;
     description?: string;
-    category_id: string;
     quantity: number;
-    price: number;
     unit: string;
     image?: string | null;
+    price: number;
+    category_name: string;
 }
